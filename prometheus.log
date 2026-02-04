@@ -1,0 +1,68 @@
+time=2026-02-04T19:15:34.322+05:30 level=INFO source=main.go:1618 msg="updated GOGC" old=100 new=75
+time=2026-02-04T19:15:34.323+05:30 level=INFO source=main.go:733 msg="Leaving GOMAXPROCS=18: CPU quota undefined" component=automaxprocs
+time=2026-02-04T19:15:34.324+05:30 level=INFO source=memlimit.go:198 msg="GOMEMLIMIT is updated" component=automemlimit package=github.com/KimMachineGun/automemlimit/memlimit GOMEMLIMIT=14544488448 previous=9223372036854775807
+time=2026-02-04T19:15:34.324+05:30 level=INFO source=main.go:781 msg="No time or size retention was set so using the default time retention" duration=15d
+time=2026-02-04T19:15:34.324+05:30 level=INFO source=main.go:832 msg="Starting Prometheus Server" mode=server version="(version=3.9.1, branch=main, revision=9cb3641ccd9141d70555b965d1bc277b541e36a8)"
+time=2026-02-04T19:15:34.324+05:30 level=INFO source=main.go:837 msg="operational information" build_context="(go=go1.24.9, platform=linux/amd64, user=mohdaslam@MohdAslamLinux, date=20260114-05:11:28, tags=netgo,builtinassets)" host_details="(Linux 6.8.0-40-generic #40~22.04.3-Ubuntu SMP PREEMPT_DYNAMIC Tue Jul 30 17:30:19 UTC 2 x86_64 MohdAslamLinux (none))" fd_limits="(soft=1048576, hard=1048576)" vm_limits="(soft=unlimited, hard=unlimited)"
+time=2026-02-04T19:15:34.326+05:30 level=INFO source=web.go:677 msg="Start listening for connections" component=web address=:9091
+time=2026-02-04T19:15:34.327+05:30 level=INFO source=main.go:1360 msg="Starting TSDB ..."
+time=2026-02-04T19:15:34.327+05:30 level=INFO source=repair.go:54 msg="Found healthy block" component=tsdb mint=1770161873171 maxt=1770163200000 ulid=01KGMDSV8ESEWNGKPPV54C1T4S
+time=2026-02-04T19:15:34.327+05:30 level=INFO source=repair.go:54 msg="Found healthy block" component=tsdb mint=1770163203171 maxt=1770170400000 ulid=01KGMDSV9Q46G89G8W1BEGS58Q
+time=2026-02-04T19:15:34.331+05:30 level=INFO source=tls_config.go:354 msg="Listening on" component=web address=[::]:9091
+time=2026-02-04T19:15:34.332+05:30 level=INFO source=tls_config.go:357 msg="TLS is disabled." component=web http2=false address=[::]:9091
+time=2026-02-04T19:15:34.334+05:30 level=INFO source=head.go:681 msg="Replaying on-disk memory mappable chunks if any" component=tsdb
+time=2026-02-04T19:15:34.334+05:30 level=INFO source=head.go:767 msg="On-disk memory mappable chunks replay completed" component=tsdb duration=1.391µs
+time=2026-02-04T19:15:34.334+05:30 level=INFO source=head.go:775 msg="Replaying WAL, this may take a while" component=tsdb
+time=2026-02-04T19:15:34.335+05:30 level=INFO source=head.go:812 msg="WAL checkpoint loaded" component=tsdb
+time=2026-02-04T19:15:34.336+05:30 level=INFO source=head.go:848 msg="WAL segment loaded" component=tsdb segment=6 maxSegment=9 duration=1.040501ms
+time=2026-02-04T19:15:34.339+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:15:34.339+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:15:34.339+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:15:34.339+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:15:34.339+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:15:34.339+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:15:34.339+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:15:34.339+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:15:34.339+05:30 level=INFO source=head.go:848 msg="WAL segment loaded" component=tsdb segment=7 maxSegment=9 duration=3.096298ms
+time=2026-02-04T19:15:34.340+05:30 level=INFO source=head.go:848 msg="WAL segment loaded" component=tsdb segment=8 maxSegment=9 duration=981.05µs
+time=2026-02-04T19:15:34.340+05:30 level=INFO source=head.go:848 msg="WAL segment loaded" component=tsdb segment=9 maxSegment=9 duration=361.564µs
+time=2026-02-04T19:15:34.340+05:30 level=INFO source=head.go:885 msg="WAL replay completed" component=tsdb checkpoint_replay_duration=685.595µs wal_replay_duration=5.65048ms wbl_replay_duration=201ns chunk_snapshot_load_duration=0s mmap_chunk_replay_duration=1.391µs total_replay_duration=6.364371ms
+time=2026-02-04T19:15:34.343+05:30 level=INFO source=main.go:1381 msg="filesystem information" fs_type=EXT4_SUPER_MAGIC
+time=2026-02-04T19:15:34.343+05:30 level=INFO source=main.go:1384 msg="TSDB started"
+time=2026-02-04T19:15:34.343+05:30 level=INFO source=main.go:1571 msg="Loading configuration file" filename=prometheus.yml
+time=2026-02-04T19:15:34.343+05:30 level=INFO source=main.go:1611 msg="Completed loading of configuration file" db_storage=1.044µs remote_storage=1.742µs web_handler=434ns query_engine=852ns scrape=40.804µs scrape_sd=19.194µs notify=1.055µs notify_sd=737ns rules=1.465µs tracing=4.257µs filename=prometheus.yml totalDuration=254.283µs
+time=2026-02-04T19:15:34.343+05:30 level=INFO source=main.go:1345 msg="Server is ready to receive web requests."
+time=2026-02-04T19:15:34.343+05:30 level=INFO source=manager.go:202 msg="Starting rule manager..." component="rule manager"
+time=2026-02-04T19:15:43.175+05:30 level=INFO source=compact.go:584 msg="write block started" component=tsdb mint=1770170400000 maxt=1770177600000 ulid=01KGMEDP07S3TW8KFNPK91QKS5
+time=2026-02-04T19:15:43.192+05:30 level=INFO source=compact.go:609 msg="write block resulted in empty block" component=tsdb mint=1770170400000 maxt=1770177600000 duration=17.174545ms
+time=2026-02-04T19:15:43.192+05:30 level=INFO source=head.go:1424 msg="Head GC started" component=tsdb caller=truncateMemory
+time=2026-02-04T19:15:43.194+05:30 level=INFO source=head.go:1428 msg="Head GC completed" component=tsdb caller=truncateMemory duration=1.949981ms
+time=2026-02-04T19:15:43.194+05:30 level=INFO source=checkpoint.go:100 msg="Creating checkpoint" component=tsdb from_segment=6 to_segment=7 mint=1770177600000
+time=2026-02-04T19:15:43.200+05:30 level=INFO source=head.go:1389 msg="WAL checkpoint complete" component=tsdb first=6 last=7 duration=5.66733ms
+time=2026-02-04T19:16:03.179+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:17:28.178+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:17:28.179+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:17:28.180+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:17:28.180+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:17:28.181+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:17:28.182+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:17:28.182+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:25:43.185+05:30 level=INFO source=main.go:630 msg="MaaS: Successfully requested memory" size=128
+time=2026-02-04T19:27:19.043+05:30 level=INFO source=main.go:1571 msg="Loading configuration file" filename=prometheus.yml
+time=2026-02-04T19:27:19.044+05:30 level=INFO source=main.go:1611 msg="Completed loading of configuration file" db_storage=2.201µs remote_storage=2.123µs web_handler=642ns query_engine=1.612µs scrape=642.099µs scrape_sd=9.454µs notify=1.327µs notify_sd=1.085µs rules=3.054µs tracing=3.043µs filename=prometheus.yml totalDuration=992.347µs
+time=2026-02-04T19:30:03.177+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:30:03.177+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:30:03.177+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:30:03.178+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:30:03.178+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:39:33.177+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:40:03.177+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:40:03.177+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:40:03.178+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:40:03.178+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:49:03.178+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:50:03.177+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:50:03.177+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:50:03.178+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:50:03.178+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
+time=2026-02-04T19:58:48.177+05:30 level=ERROR source=main.go:621 msg="MaaS: HTTP request failed" err="Post \"http://localhost:3000/allocate\": dial tcp 127.0.0.1:3000: connect: connection refused"
