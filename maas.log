@@ -1,0 +1,42 @@
+warning: unused import: `Mutex`
+ --> src/handlers.rs:7:22
+  |
+7 | use std::sync::{Arc, Mutex};
+  |                      ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `register_histogram`
+  --> src/handlers.rs:13:58
+   |
+13 | use prometheus::{Encoder, TextEncoder, register_counter, register_histogram, register_gauge};
+   |                                                          ^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `Json`
+ --> src/models.rs:5:5
+  |
+5 |     Json,
+  |     ^^^^
+
+warning: unused import: `std::time::SystemTime`
+ --> src/models.rs:8:5
+  |
+8 | use std::time::SystemTime;
+  |     ^^^^^^^^^^^^^^^^^^^^^
+
+warning: field `data` is never read
+  --> src/state.rs:11:9
+   |
+ 8 | pub struct MemoryAllocation {
+   |            ---------------- field in this struct
+...
+11 |     pub data: Arc<Vec<u8>>,
+   |         ^^^^
+   |
+   = note: `MemoryAllocation` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `maas-backend` (bin "maas-backend") generated 5 warnings (run `cargo fix --bin "maas-backend" -p maas-backend` to apply 4 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.22s
+     Running `target/debug/maas-backend`
+Listening on 127.0.0.1:3000
