@@ -27,3 +27,11 @@ Thumbs.db
 # Backup files
 *.bak
 *.backup
+
+# Binary distributions and archives
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.zip
+*.deb
+*.rpm
