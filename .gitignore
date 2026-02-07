@@ -1,0 +1,29 @@
+# Prometheus binaries
+/prometheus/prometheus
+/prometheus/promtool
+
+# Test data directories
+/tmp/
+**/prometheus-data/
+**/prometheus-maas-data/
+
+# Logs
+*.log
+
+# MaaS backend build artifacts
+maas-backend/target/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup

@@ -1,0 +1,11 @@
+[server]
+host = "127.0.0.1"
+port = 3000
+
+[memory]
+# Slab sizes in bytes - each size creates a separate pool
+slab_sizes = [1024, 4096, 16384, 65536, 262144, 1048576, 4194304]
+# Maximum total pool size in bytes (1GB default)
+max_pool_size = 1073741824
+# Initial slabs to pre-allocate per size
+initial_slabs_per_size = 10
