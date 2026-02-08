@@ -9,15 +9,6 @@
 
 set -e
 
-# ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Kill existing
-# pkill -f node_exporter 2>/dev/null || true
-# sleep 1
-
-# echo "=== Starting node_exporter ==="
-# echo "  Listening on: http://localhost:9100/metrics"
-# echo "  Prometheus will scrape this automatically (job: high-cardinality-stress-test)"
-# echo ""
-
-exec /workspaces/MemoryAsAService/node_exporter --web.listen-address=":9100"
+exec "$ROOT_DIR/node_exporter" --web.listen-address=":9100"

@@ -141,6 +141,48 @@ Go to `http://localhost:9090`, query:
 
 Same queries now return **empty result** -- metrics don't exist without MaaS.
 
+### What the comparison proves
+
+| What | With MaaS | Without MaaS |
+|------|-----------|--------------|
+| `prometheus_tsdb_maas_enabled` | 1 | empty (metric absent) |
+| `prometheus_tsdb_memory_total_available_bytes` | ~1.1 GB (local + MaaS) | empty (metric absent) |
+| `prometheus_tsdb_memory_maas_capacity_bytes` | 1073741824 (1 GB) | empty (metric absent) |
+| `prometheus_tsdb_maas_chunks_allocated_total` | growing counter | empty (metric absent) |
+| `prometheus_tsdb_memory_local_heap_bytes` | visible | empty (metric absent) |
+| `go_memstats_heap_inuse_bytes` | visible | visible (only memory info available) |
+
+Without MaaS, Prometheus has **zero awareness** of available memory. With MaaS, it knows its total capacity (local + remote) and tracks every chunk allocation.
+
+---
+
+## GitHub Codespaces Setup
+
+If MaaS runs in a Codespace and Prometheus runs locally (or on another server):
+
+1. In the Codespace, make ports **3000** and **9100** public via the **Ports** tab
+2. The Codespace URL format is: `https://<codespace-name>-<port>.app.github.dev`
+   - Do **NOT** append `:<port>` to the URL -- the port is encoded in the hostname
+3. Edit your local `prometheus.yml`:
+
+```yaml
+  - job_name: 'maas-backend'
+    scheme: https
+    static_configs:
+      - targets: ['<codespace-name>-3000.app.github.dev']
+
+  - job_name: 'node-exporter-remote'
+    scheme: https
+    static_configs:
+      - targets: ['<codespace-name>-9100.app.github.dev']
+```
+
+4. Start Prometheus locally:
+
+```bash
+./run_prometheus.sh with-maas --maas-url https://<codespace-name>-3000.app.github.dev --clean
+```
+
 ---
 
 ## Ports Summary
