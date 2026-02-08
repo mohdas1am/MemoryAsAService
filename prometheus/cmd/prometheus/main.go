@@ -1351,6 +1351,7 @@ func main() {
 	}
 	if !agentMode {
 		// TSDB.
+		logger.Info("DEBUG: cfg.tsdb.MaaSURL before ToTSDBOptions", "url", cfg.tsdb.MaaSURL, "fallback", cfg.tsdb.MaaSFallbackEnabled)
 		opts := cfg.tsdb.ToTSDBOptions()
 		cancel := make(chan struct{})
 		g.Add(

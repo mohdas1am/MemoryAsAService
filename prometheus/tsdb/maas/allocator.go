@@ -104,3 +104,8 @@ func (ca *ChunkAllocator) Cleanup() error {
 func (ca *ChunkAllocator) SetThreshold(thresholdMB uint64) {
 	ca.poolManager.SetThreshold(thresholdMB)
 }
+
+// FetchServerStats returns MaaS server-side stats (capacity, usage)
+func (ca *ChunkAllocator) FetchServerStats() (*ServerStats, error) {
+	return ca.poolManager.FetchServerStats()
+}

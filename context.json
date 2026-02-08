@@ -1,0 +1,240 @@
+{
+  "project": {
+    "name": "Memory-as-a-Service (MaaS)",
+    "version": "2.0",
+    "description": "A production-ready, high-performance memory server with Prometheus integration, enabling distributed memory allocation for applications like Prometheus TSDB",
+    "repository": {
+      "owner": "mohdas1am",
+      "name": "MemoryAsAService",
+      "branch": "v2-update",
+      "url": "https://github.com/mohdas1am/MemoryAsAService"
+    }
+  },
+  "architecture": {
+    "pattern": "Client-Server",
+    "description": "MaaS backend acts as a remote memory server that Prometheus (or other clients) can use to allocate memory chunks over HTTP",
+    "components": [
+      {
+        "name": "MaaS Backend",
+        "language": "Rust",
+        "framework": "Axum (async web framework)",
+        "role": "Memory server with slab allocator",
+        "port": 3000,
+        "endpoints": [
+          "POST /allocate - Allocate memory",
+          "DELETE /allocate/:id - Deallocate memory",
+          "GET /health - Health check",
+          "GET /stats - Memory statistics",
+          "GET /metrics - Prometheus metrics"
+        ]
+      },
+      {
+        "name": "Prometheus Integration",
+        "language": "Go",
+        "version": "3.9.1 (forked)",
+        "role": "Modified Prometheus TSDB to use MaaS for chunk storage",
+        "integration_points": [
+          "tsdb/maas/client.go - HTTP client for MaaS",
+          "tsdb/maas/pool.go - Memory pool manager",
+          "tsdb/maas/allocator.go - Chunk allocator wrapper",
+          "tsdb/chunkenc/*.go - Modified chunk creation"
+        ]
+      }
+    ]
+  },
+  "features": {
+    "memory_management": {
+      "allocator": "Slab allocator",
+      "strategy": "Fixed-size block allocation with automatic reuse",
+      "slab_sizes": [1024, 4096, 16384, 65536, 262144, 1048576, 4194304],
+      "slab_sizes_human": ["1KB", "4KB", "16KB", "64KB", "256KB", "1MB", "4MB"],
+      "max_pool_size": "1GB (1073741824 bytes)",
+      "zero_copy": "Memory blocks zeroed on deallocation for security",
+      "reuse": "Automatic slab recycling for optimal performance"
+    },
+    "prometheus_integration": {
+      "allocation_strategy": "Use MaaS whenever healthy, fallback to local on failure",
+      "health_monitoring": "Background goroutine checks MaaS every 30s",
+      "fallback_enabled": true,
+      "chunk_types_integrated": ["XORChunk", "HistogramChunk", "FloatHistogramChunk"],
+      "command_line_flags": [
+        "--storage.tsdb.maas.url=http://localhost:3000",
+        "--storage.tsdb.maas.fallback=true"
+      ]
+    },
+    "observability": {
+      "metrics_endpoint": "/metrics",
+      "metrics": [
+        "maas_active_allocations - Current allocations",
+        "maas_allocation_size_bytes - In-use memory",
+        "maas_pool_size_bytes - Total allocated pool per slab size",
+        "maas_utilization_percent - Pool utilization percentage",
+        "maas_request_count - Total request counter",
+        "maas_slab_reuse_total - Slab reuse counter"
+      ],
+      "stats_endpoint": "/stats",
+      "health_endpoint": "/health",
+      "logging": "tracing + tracing-subscriber"
+    }
+  },
+  "configuration": {
+    "maas_backend": {
+      "environment_file": ".env",
+      "config_file": "config.toml",
+      "key_settings": {
+        "SERVER_HOST": "127.0.0.1",
+        "SERVER_PORT": 3000,
+        "SLAB_SIZES": "1024,4096,16384,65536,262144,1048576,4194304",
+        "MAX_POOL_SIZE": 1073741824,
+        "BACKEND_SERVER_URL": "Optional backend connection",
+        "PROMETHEUS_PUSH_ENABLED": false,
+        "RUST_LOG": "info"
+      }
+    },
+    "prometheus": {
+      "config_file": "prometheus.yml",
+      "scrape_interval": "5s",
+      "scrape_targets": [
+        "localhost:9090 (self)",
+        "localhost:3000 (MaaS metrics)"
+      ]
+    }
+  },
+  "dependencies": {
+    "maas_backend": {
+      "runtime": "Rust 1.70+",
+      "key_crates": [
+        "axum 0.7 - Web framework",
+        "tokio 1 - Async runtime",
+        "serde 1 - Serialization",
+        "uuid 1 - Unique IDs",
+        "prometheus 0.13 - Metrics",
+        "tracing - Logging"
+      ]
+    },
+    "prometheus": {
+      "runtime": "Go 1.25+",
+      "build_tool": "make",
+      "integration_packages": [
+        "net/http - HTTP client",
+        "log/slog - Logging",
+        "sync/atomic - Lock-free counters"
+      ]
+    }
+  },
+  "build_and_deployment": {
+    "maas_backend": {
+      "build_command": "cargo build --release",
+      "run_command": "cargo run --release",
+      "binary_location": "target/release/maas-backend",
+      "docker_support": false
+    },
+    "prometheus": {
+      "build_command": "make build",
+      "binary_location": "./prometheus",
+      "run_command": "./prometheus --config.file=prometheus.yml --storage.tsdb.maas.url=http://localhost:3000 --storage.tsdb.maas.fallback=true"
+    }
+  },
+  "testing": {
+    "testing_guide": "TESTING_GUIDE.md",
+    "monitoring_script": "monitor_maas.sh",
+    "integration_test": "test_maas_integration.sh",
+    "test_scenarios": [
+      "Health check verification",
+      "Memory allocation/deallocation",
+      "Prometheus integration with MaaS",
+      "Metrics monitoring",
+      "Load testing with burst_allocate.sh",
+      "Live allocation testing"
+    ],
+    "verification_steps": [
+      "curl http://localhost:3000/health",
+      "curl http://localhost:3000/stats",
+      "curl http://localhost:3000/metrics",
+      "watch -n 2 'curl -s http://localhost:3000/stats'"
+    ]
+  },
+  "api_reference": {
+    "allocate": {
+      "method": "POST",
+      "path": "/allocate",
+      "request_body": {
+        "size_bytes": "integer - Requested memory size"
+      },
+      "response": {
+        "id": "string - Allocation UUID",
+        "size_bytes": "integer - Requested size",
+        "actual_size_bytes": "integer - Actual slab size allocated",
+        "size_mb": "float - Size in MB",
+        "age_seconds": "integer - Allocation age"
+      }
+    },
+    "deallocate": {
+      "method": "DELETE",
+      "path": "/allocate/:id",
+      "response": {
+        "message": "string - Deallocation confirmation"
+      }
+    },
+    "health": {
+      "method": "GET",
+      "path": "/health",
+      "response": {
+        "status": "string - healthy/unhealthy",
+        "version": "string - MaaS version",
+        "uptime_seconds": "integer",
+        "memory": "object - Memory stats"
+      }
+    },
+    "stats": {
+      "method": "GET",
+      "path": "/stats",
+      "response": {
+        "total_allocations": "integer",
+        "active_allocations": "integer",
+        "total_allocated_bytes": "integer",
+        "pool_stats": "array - Per-slab statistics"
+      }
+    }
+  },
+  "git_management": {
+    "ignored_files": [
+      "*.tar.gz, *.zip - Binary distributions",
+      "maas-backend/target/ - Rust build artifacts",
+      "*.log - Log files",
+      "/prometheus/prometheus, /prometheus/promtool - Built binaries",
+      ".env - Environment secrets"
+    ],
+    "large_files_removed": [
+      "go1.22.0.linux-amd64.tar.gz (69MB) - Removed from history via git filter-branch"
+    ],
+    "prometheus_tracking": "Tracked as gitlink (submodule pointer at commit 9cb3641ccd)"
+  },
+  "performance_characteristics": {
+    "allocation_speed": "O(1) - Direct slab lookup",
+    "deallocation_speed": "O(1) - Return to free list",
+    "memory_overhead": "Minimal - Slab sizes optimized for common use cases",
+    "concurrency": "Thread-safe with Arc<Mutex<>> for slab pools",
+    "http_latency": "Sub-millisecond for local connections",
+    "prometheus_impact": "Transparent - chunks allocated seamlessly from MaaS when available"
+  },
+  "use_cases": {
+    "primary": "Extend Prometheus TSDB memory capacity by offloading chunk storage to remote MaaS server",
+    "scenarios": [
+      "High-cardinality metrics requiring more memory than available on single host",
+      "Multi-tenant Prometheus with shared memory pool",
+      "Cost optimization by using cheaper remote memory",
+      "Memory isolation between Prometheus instances"
+    ]
+  },
+  "future_enhancements": {
+    "suggested": [
+      "WAL segment buffering integration in Prometheus",
+      "Query result buffering with MaaS",
+      "gRPC support for lower latency",
+      "Distributed MaaS cluster with replication",
+      "Memory compression for older chunks",
+      "Integration with other TSDB systems (InfluxDB, VictoriaMetrics)"
+    ]
+  }
+}

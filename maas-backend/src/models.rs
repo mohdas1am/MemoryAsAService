@@ -2,10 +2,8 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use axum::{
     response::{IntoResponse, Response},
-    Json,
     http::StatusCode,
 };
-use std::time::SystemTime;
 use crate::slab::SlabPoolStats;
 
 #[derive(Debug, Deserialize)]

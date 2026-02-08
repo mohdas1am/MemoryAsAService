@@ -2,16 +2,16 @@ use std::collections::{HashMap, VecDeque};
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 use std::time::SystemTime;
-use tracing::{info, warn, error};
+use tracing::{info, error};
 use serde::Serialize;
 
 /// A memory slab - a fixed-size block of memory
 #[derive(Debug)]
 pub struct Slab {
     pub id: Uuid,
-    pub size: usize,
+    pub _size: usize,
     pub data: Vec<u8>,
-    pub created_at: SystemTime,
+    pub _created_at: SystemTime,
     pub in_use: bool,
 }
 
@@ -19,9 +19,9 @@ impl Slab {
     fn new(size: usize) -> Self {
         Self {
             id: Uuid::new_v4(),
-            size,
+            _size: size,
             data: vec![0u8; size],
-            created_at: SystemTime::now(),
+            _created_at: SystemTime::now(),
             in_use: false,
         }
     }
@@ -215,6 +215,7 @@ impl SlabAllocator {
     }
 
     /// Get number of active allocations
+    #[allow(dead_code)]
     pub fn get_active_allocations(&self) -> usize {
         let allocations = self.allocations.lock().unwrap();
         allocations.len()

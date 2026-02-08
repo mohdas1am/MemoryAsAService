@@ -1,6 +1,7 @@
 package maas
 
 import (
+	"fmt"
 	"log/slog"
 	"runtime"
 	"sync"
@@ -221,4 +222,12 @@ func (m *MemoryPoolManager) Cleanup() error {
 func (m *MemoryPoolManager) SetThreshold(thresholdMB uint64) {
 	m.localMemoryThreshold = thresholdMB * 1024 * 1024
 	m.logger.Info("Updated memory threshold", "threshold_mb", thresholdMB)
+}
+
+// FetchServerStats returns MaaS server-side stats (capacity, usage)
+func (m *MemoryPoolManager) FetchServerStats() (*ServerStats, error) {
+	if m.maasClient == nil {
+		return nil, fmt.Errorf("MaaS client not configured")
+	}
+	return m.maasClient.FetchServerStats()
 }

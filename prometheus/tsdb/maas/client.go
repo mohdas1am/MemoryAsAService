@@ -179,3 +179,34 @@ func (c *Client) Cleanup() error {
 	}
 	return firstErr
 }
+
+// ServerStats represents the MaaS backend server statistics
+type ServerStats struct {
+	TotalAllocatedBytes int     `json:"total_allocated_bytes"`
+	TotalInUseBytes     int     `json:"total_in_use_bytes"`
+	TotalAllocatedMB    float64 `json:"total_allocated_mb"`
+	TotalInUseMB        float64 `json:"total_in_use_mb"`
+	ActiveAllocations   int     `json:"active_allocations"`
+	MaxPoolSize         int     `json:"max_pool_size"`
+	UtilizationPercent  float64 `json:"utilization_percent"`
+}
+
+// FetchServerStats queries the MaaS /stats endpoint to get server-side capacity info
+func (c *Client) FetchServerStats() (*ServerStats, error) {
+	resp, err := c.httpClient.Get(c.baseURL + "/stats")
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch MaaS stats: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("MaaS stats request failed: %d", resp.StatusCode)
+	}
+
+	var stats ServerStats
+	if err := json.NewDecoder(resp.Body).Decode(&stats); err != nil {
+		return nil, fmt.Errorf("failed to decode MaaS stats: %w", err)
+	}
+
+	return &stats, nil
+}

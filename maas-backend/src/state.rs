@@ -10,7 +10,7 @@ pub struct AllocationRecord {
     pub id: Uuid,
     pub size_bytes: usize,
     pub actual_size_bytes: usize,
-    pub slab_id: Uuid,
+    pub _slab_id: Uuid,
     pub created_at: SystemTime,
 }
 

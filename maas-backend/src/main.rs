@@ -44,8 +44,10 @@ async fn main() {
         .route("/allocate/:id", delete(deallocate_handler))
         .with_state(state);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], config.server.port));
-    info!("🚀 Memory-as-a-Service v{} starting on {}", env!("CARGO_PKG_VERSION"), addr);
+    let addr: SocketAddr = format!("{}:{}", config.server.host, config.server.port)
+        .parse()
+        .expect("Invalid server address");
+    info!("Memory-as-a-Service v{} starting on {}", env!("CARGO_PKG_VERSION"), addr);
     info!("   Max pool size: {} MB", config.memory.max_pool_size / 1_048_576);
     info!("   Slab sizes: {:?}", config.memory.slab_sizes);
     info!("   Metrics exposed at: http://{}/metrics", addr);

@@ -296,6 +296,9 @@ func NewHead(r prometheus.Registerer, l *slog.Logger, wal, wbl *wlog.WL, opts *H
 		reg:   r,
 	}
 	
+	// DEBUG: Log MaaS configuration
+	l.Info("MaaS configuration check", "url", opts.MaaSURL, "fallback", opts.MaaSFallbackEnabled, "url_empty", opts.MaaSURL == "")
+	
 	// Initialize MaaS allocator if configured
 	if opts.MaaSURL != "" {
 		l.Info("Initializing MaaS memory allocator", "url", opts.MaaSURL, "fallback", opts.MaaSFallbackEnabled)
@@ -644,6 +647,112 @@ func newHeadMetrics(h *Head, r prometheus.Registerer) *headMetrics {
 			m.walReplayUnknownRefsTotal,
 			m.wblReplayUnknownRefsTotal,
 		)
+
+		// Register MaaS memory metrics if MaaS allocator is configured
+		if h.maasAllocator != nil {
+			// Cache for MaaS server stats to avoid hitting the server on every scrape
+			var (
+				cachedServerStats     *maas.ServerStats
+				serverStatsMu         sync.Mutex
+				serverStatsLastFetch  time.Time
+				serverStatsCacheTTL   = 5 * time.Second
+			)
+			fetchServerStats := func() *maas.ServerStats {
+				serverStatsMu.Lock()
+				defer serverStatsMu.Unlock()
+				if cachedServerStats != nil && time.Since(serverStatsLastFetch) < serverStatsCacheTTL {
+					return cachedServerStats
+				}
+				stats, err := h.maasAllocator.FetchServerStats()
+				if err != nil {
+					return cachedServerStats // return stale cache on error
+				}
+				cachedServerStats = stats
+				serverStatsLastFetch = time.Now()
+				return stats
+			}
+
+			r.MustRegister(
+				prometheus.NewGaugeFunc(prometheus.GaugeOpts{
+					Name: "prometheus_tsdb_maas_enabled",
+					Help: "1 if MaaS (Memory-as-a-Service) is configured for TSDB chunk allocation.",
+				}, func() float64 {
+					return 1
+				}),
+				prometheus.NewGaugeFunc(prometheus.GaugeOpts{
+					Name: "prometheus_tsdb_maas_available",
+					Help: "1 if MaaS backend is currently healthy and accepting allocations, 0 otherwise.",
+				}, func() float64 {
+					if h.maasAllocator.IsEnabled() {
+						return 1
+					}
+					return 0
+				}),
+				prometheus.NewGaugeFunc(prometheus.GaugeOpts{
+					Name: "prometheus_tsdb_maas_chunks_allocated_total",
+					Help: "Total number of TSDB chunks allocated via MaaS remote memory.",
+				}, func() float64 {
+					return float64(h.maasAllocator.GetStats().MaaSAllocations)
+				}),
+				prometheus.NewGaugeFunc(prometheus.GaugeOpts{
+					Name: "prometheus_tsdb_maas_chunks_local_total",
+					Help: "Total number of TSDB chunks allocated in local (Go) memory.",
+				}, func() float64 {
+					return float64(h.maasAllocator.GetStats().LocalAllocations)
+				}),
+				prometheus.NewGaugeFunc(prometheus.GaugeOpts{
+					Name: "prometheus_tsdb_maas_fallback_total",
+					Help: "Total number of times MaaS allocation failed and fell back to local memory.",
+				}, func() float64 {
+					return float64(h.maasAllocator.GetStats().FallbackCount)
+				}),
+				prometheus.NewGaugeFunc(prometheus.GaugeOpts{
+					Name: "prometheus_tsdb_memory_local_heap_bytes",
+					Help: "Go runtime heap memory in use (bytes). This is Prometheus local memory consumption.",
+				}, func() float64 {
+					return float64(h.maasAllocator.GetStats().MemoryStats.HeapInuse)
+				}),
+				prometheus.NewGaugeFunc(prometheus.GaugeOpts{
+					Name: "prometheus_tsdb_memory_maas_capacity_bytes",
+					Help: "Total memory capacity available from MaaS backend (max pool size in bytes).",
+				}, func() float64 {
+					if stats := fetchServerStats(); stats != nil {
+						return float64(stats.MaxPoolSize)
+					}
+					return 0
+				}),
+				prometheus.NewGaugeFunc(prometheus.GaugeOpts{
+					Name: "prometheus_tsdb_memory_maas_used_bytes",
+					Help: "Memory currently in use on MaaS backend (bytes).",
+				}, func() float64 {
+					if stats := fetchServerStats(); stats != nil {
+						return float64(stats.TotalInUseBytes)
+					}
+					return 0
+				}),
+				prometheus.NewGaugeFunc(prometheus.GaugeOpts{
+					Name: "prometheus_tsdb_memory_maas_free_bytes",
+					Help: "Memory available (free) on MaaS backend (bytes).",
+				}, func() float64 {
+					if stats := fetchServerStats(); stats != nil {
+						return float64(stats.MaxPoolSize - stats.TotalInUseBytes)
+					}
+					return 0
+				}),
+				prometheus.NewGaugeFunc(prometheus.GaugeOpts{
+					Name: "prometheus_tsdb_memory_total_available_bytes",
+					Help: "Total memory available to Prometheus: local Go heap + MaaS free capacity (bytes).",
+				}, func() float64 {
+					poolStats := h.maasAllocator.GetStats()
+					localAvailable := float64(poolStats.MemoryStats.Sys - poolStats.MemoryStats.HeapInuse)
+					maasAvailable := float64(0)
+					if stats := fetchServerStats(); stats != nil {
+						maasAvailable = float64(stats.MaxPoolSize - stats.TotalInUseBytes)
+					}
+					return localAvailable + maasAvailable
+				}),
+			)
+		}
 	}
 	return m
 }

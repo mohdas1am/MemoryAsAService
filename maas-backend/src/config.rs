@@ -9,6 +9,7 @@ pub struct Config {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ServerConfig {
+    #[allow(dead_code)]
     pub host: String,
     pub port: u16,
 }

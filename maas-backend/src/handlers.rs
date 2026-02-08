@@ -23,8 +23,12 @@ lazy_static::lazy_static! {
         register_gauge!("maas_pool_size_bytes", "Total allocated pool size in bytes").unwrap();
     static ref UTILIZATION_GAUGE: prometheus::Gauge = 
         register_gauge!("maas_utilization_percent", "Memory pool utilization percentage").unwrap();
-    static ref SLAB_REUSE_COUNTER: prometheus::Counter = 
+    static ref SLAB_REUSE_COUNTER: prometheus::Counter =
         register_counter!("maas_slab_reuse_total", "Total number of slab reuses").unwrap();
+    static ref MAX_POOL_SIZE_GAUGE: prometheus::Gauge =
+        register_gauge!("maas_max_pool_size_bytes", "Maximum pool size in bytes (total MaaS capacity)").unwrap();
+    static ref AVAILABLE_BYTES_GAUGE: prometheus::Gauge =
+        register_gauge!("maas_available_bytes", "Available (free) memory in bytes in MaaS").unwrap();
 }
 
 pub async fn health_check(State(state): State<AppState>) -> Json<HealthResponse> {
@@ -55,7 +59,9 @@ pub async fn metrics_handler(State(state): State<AppState>) -> String {
     ALLOCATION_SIZE_GAUGE.set(stats.total_in_use_bytes as f64);
     POOL_SIZE_GAUGE.set(stats.total_allocated_bytes as f64);
     UTILIZATION_GAUGE.set(stats.utilization_percent);
-    
+    MAX_POOL_SIZE_GAUGE.set(stats.max_pool_size as f64);
+    AVAILABLE_BYTES_GAUGE.set((stats.max_pool_size - stats.total_in_use_bytes) as f64);
+
     let encoder = TextEncoder::new();
     let metric_families = prometheus::gather();
     let mut buffer = vec![];
@@ -86,7 +92,7 @@ pub async fn allocate_handler(
         id: allocation_id,
         size_bytes: payload.size_bytes,
         actual_size_bytes: actual_size,
-        slab_id,
+            _slab_id: slab_id,
         created_at: now,
     };
 
@@ -119,7 +125,7 @@ pub async fn deallocate_handler(
     REQUEST_COUNTER.inc();
 
     // Remove from tracking
-    let record = {
+    let _record = {
         let mut allocations = state.allocations.lock().unwrap();
         allocations.remove(&id)
             .ok_or_else(|| AppError(StatusCode::NOT_FOUND, "Allocation not found".to_string()))?
